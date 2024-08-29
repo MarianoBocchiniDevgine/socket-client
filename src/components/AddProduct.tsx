@@ -25,7 +25,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
     price: 0,
     amount: 0,
     corpName: "",
-    corpId: 1, // Fijar el valor de corpId directamente aquí
+    corpId: 1, 
   });
 
   const handleOpen = () => setOpen(true);
@@ -41,8 +41,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
 
   const handleAddProduct = async () => {
     try {
-      onAddProduct(newProduct); // Usa el estado newProduct directamente
-      handleClose();
+      onAddProduct(newProduct); 
     } catch (error) {
       console.error("Error al enviar el producto al servidor:", error);
     }
