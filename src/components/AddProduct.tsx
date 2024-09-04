@@ -5,27 +5,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import { AddProductProps, NewProduct } from "../types";
 
-interface AddProductProps {
-  onAddProduct: (product: {
-    name: string;
-    description: string;
-    price: number;
-    amount: number;
-    corpName: string;
-    corpId: number;
-  }) => void;
-}
-
-const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
+const AddProduct = ({ onAddProduct }: AddProductProps) => {
   const [open, setOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({
+  const [newProduct, setNewProduct] = useState<NewProduct>({
     name: "",
-    description: "",
+    providerId: 0,
     price: 0,
     amount: 0,
+    corpId: 1,
     corpName: "",
-    corpId: 1, 
   });
 
   const handleOpen = () => setOpen(true);
@@ -35,16 +25,19 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
     const { name, value } = e.target;
     setNewProduct((prevProduct) => ({
       ...prevProduct,
-      [name]: value,
+      [name]:
+        name === "price" ||
+        name === "amount" ||
+        name === "corpId" ||
+        name === "providerId"
+          ? parseFloat(value)
+          : value,
     }));
   };
 
-  const handleAddProduct = async () => {
-    try {
-      onAddProduct(newProduct); 
-    } catch (error) {
-      console.error("Error al enviar el producto al servidor:", error);
-    }
+  const handleAddProduct = () => {
+    onAddProduct(newProduct);
+    handleClose();
   };
 
   return (
@@ -67,9 +60,9 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
           />
           <TextField
             margin="dense"
-            name="description"
-            label="Description"
-            type="text"
+            name="providerId"
+            label="Provider ID"
+            type="number"
             fullWidth
             variant="outlined"
             onChange={handleChange}
@@ -88,15 +81,6 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct }) => {
             name="amount"
             label="Amount"
             type="number"
-            fullWidth
-            variant="outlined"
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            name="corpName"
-            label="Corp Name"
-            type="text"
             fullWidth
             variant="outlined"
             onChange={handleChange}

@@ -11,7 +11,7 @@ const App: React.FC = () => {
     setSocket(socketIo);
 
     socketIo.on("products", (data: any[]) => {
-      console.log("Productos recibidos desde el servidor:", data);
+      console.log("Productos recibidos desde el servidor: ", data);
       setProducts(data);
     });
 
@@ -45,15 +45,28 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleAddProduct = (product: {
+  const handleAddProduct = async (product: {
     name: string;
-    description: string;
     price: number;
     amount: number;
-    corpName: string;
   }) => {
-    if (socket) {
-      socket.emit("newProduct", product);
+    try {
+      const response = await fetch("http://localhost:4000/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+
+      if (response.ok) {
+        socket.emit(products);
+        console.log("producto cargado correctamente");
+      } else {
+        console.log("Error al agregar un producto");
+      }
+    } catch (error) {
+      console.log("Error al agregar un producto", error);
     }
   };
 
@@ -75,7 +88,7 @@ const App: React.FC = () => {
         products={products}
         onAddProduct={handleAddProduct}
         onUpdateProduct={handleUpdateProduct}
-        onDeleteProduct={handleDeleteProduct} 
+        onDeleteProduct={handleDeleteProduct}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ProductTableProps, Product } from "../types";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,28 +13,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import AddProduct from "./AddProduct";
 
-interface Product {
-  id: number;
-  corpId: number;
-  name: string;
-  corpName: string;
-  description: string;
-  price: number;
-  amount: number;
-}
-
-interface ProductTableProps {
-  products: Product[];
-  onAddProduct: (product: {
-    name: string;
-    description: string;
-    price: number;
-    amount: number;
-    corpName: string;
-  }) => void;
-  onUpdateProduct: (product: Product) => void;
-  onDeleteProduct: (productId: number) => void;
-}
 
 const ProductTable: React.FC<ProductTableProps> = ({
   products,
@@ -56,9 +35,11 @@ const ProductTable: React.FC<ProductTableProps> = ({
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (editProduct) {
+      const { name, value } = e.target;
       setEditProduct({
         ...editProduct,
-        [e.target.name]: e.target.value,
+        [name]:
+          name === "price" || name === "amount" ? parseFloat(value) : value,
       });
     }
   };
@@ -71,7 +52,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   };
 
   const handleDeleteClick = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    if (window.confirm("SEguro quieres eliminar este producto de la tabla?")) {
       onDeleteProduct(id);
     }
   };
@@ -84,7 +65,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
+            <TableCell>Provider</TableCell>
             <TableCell>Price</TableCell>
             <TableCell>Amount</TableCell>
             <TableCell>Corp Name</TableCell>
@@ -96,7 +77,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
             <TableRow key={product.id}>
               <TableCell>{product.id}</TableCell>
               <TableCell>{product.name}</TableCell>
-              <TableCell>{product.description}</TableCell>
+              <TableCell>{product.providerId}</TableCell>
               <TableCell>{product.price}</TableCell>
               <TableCell>{product.amount}</TableCell>
               <TableCell>{product.corpName}</TableCell>
@@ -136,11 +117,11 @@ const ProductTable: React.FC<ProductTableProps> = ({
           />
           <TextField
             margin="dense"
-            name="description"
-            label="Description"
+            name="provider"
+            label="Provider"
             type="text"
             fullWidth
-            value={editProduct?.description || ""}
+            value={editProduct?.providerId || ""}
             onChange={handleEditChange}
           />
           <TextField
@@ -159,15 +140,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
             type="number"
             fullWidth
             value={editProduct?.amount || ""}
-            onChange={handleEditChange}
-          />
-          <TextField
-            margin="dense"
-            name="corpName"
-            label="Corp Name"
-            type="text"
-            fullWidth
-            value={editProduct?.corpName || ""}
             onChange={handleEditChange}
           />
         </DialogContent>
