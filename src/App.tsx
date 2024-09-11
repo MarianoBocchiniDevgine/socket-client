@@ -49,6 +49,8 @@ const App: React.FC = () => {
     name: string;
     price: number;
     amount: number;
+    corpId: number;
+    providerId: number;
   }) => {
     try {
       const response = await fetch("http://localhost:4000/products", {
@@ -70,9 +72,40 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUpdateProduct = (updatedProduct: any) => {
-    if (socket) {
-      socket.emit("updateProduct", updatedProduct);
+  const handleUpdateProduct = async (updatedProduct: {
+    id: number;
+    name: string;
+    price: number;
+    amount: number;
+    corpId: number;
+    providerId: number;
+  }) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/products/${updatedProduct.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: updatedProduct.name,
+            price: updatedProduct.price,
+            amount: updatedProduct.amount,
+            corpId: updatedProduct.corpId,
+            providerId: updatedProduct.providerId,
+          }),
+        }
+      );
+      if (response.ok) {
+         const updatedData = await response.json(); 
+        socket.emit("productUpdated", updatedData);
+        console.log("producto editado correctamente");
+      } else {
+        console.log("Error al editar producto");
+      }
+    } catch (error) {
+      console.log("Error al editar este un producto", error);
     }
   };
 
