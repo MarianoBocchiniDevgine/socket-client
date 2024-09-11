@@ -109,9 +109,25 @@ const App: React.FC = () => {
     }
   };
 
-  const handleDeleteProduct = (productId: number) => {
-    if (socket) {
-      socket.emit("deleteProduct", productId);
+  const handleDeleteProduct = async (productId: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/products/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        socket.emit("productDeleted", productId);
+        console.log("Producto eliminado correctamente");
+      } else {
+        console.log("Error al eliminar producto");
+      }
+    } catch (error) {
+      console.log("Error al eliminar producto", error);
     }
   };
 
